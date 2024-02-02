@@ -1015,11 +1015,23 @@ func (f *frameworkImpl) RunScorePlugins(ctx context.Context, state *framework.Cy
 		metrics.FrameworkExtensionPointDuration.WithLabelValues(metrics.Score, status.Code().String(), f.profileName).Observe(metrics.SinceInSeconds(startTime))
 	}()
 	allNodePluginScores := make([]framework.NodePluginScores, len(nodes))
-	numPlugins := len(f.scorePlugins) - state.SkipScorePlugins.Len()
+	klog.Infof("[Framework]: Printing scorePlugins")
+	for i := 0; i < len(f.scorePlugins); i++ {
+		klog.Infof("[Framework]: Plugin Name '%s' ", f.scorePlugins[i].Name())
+	}
+	
+	klog.Infof("[Framework]: Printing Skip Score Plugins")
+	for element := range state.SkipScorePlugins {
+        klog.Infof("[Framework]: '%s'", element)
+    }
+
+	// numPlugins := len(f.scorePlugins) - state.SkipScorePlugins.Len()
+	numPlugins := 1
+	klog.Infof("[Framework]: Num of plugins '%s'", numPlugins)
 	plugins := make([]framework.ScorePlugin, 0, numPlugins)
 	pluginToNodeScores := make(map[string]framework.NodeScoreList, numPlugins)
 	for _, pl := range f.scorePlugins {
-		if state.SkipScorePlugins.Has(pl.Name()) {
+		if state.SkipScorePlugins.Has(pl.Name()) && pl.Name() != "CircuitNoise" {
 			continue
 		}
 		plugins = append(plugins, pl)

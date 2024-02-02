@@ -25,6 +25,7 @@ import (
 	"k8s.io/kubernetes/cmd/kube-scheduler/app"
 
 	"sigs.k8s.io/scheduler-plugins/pkg/capacityscheduling"
+	"sigs.k8s.io/scheduler-plugins/pkg/circuitnoise"
 	"sigs.k8s.io/scheduler-plugins/pkg/coscheduling"
 	"sigs.k8s.io/scheduler-plugins/pkg/networkaware/networkoverhead"
 	"sigs.k8s.io/scheduler-plugins/pkg/networkaware/topologicalsort"
@@ -60,6 +61,7 @@ func main() {
 		// app.WithPlugin(crossnodepreemption.Name, crossnodepreemption.New),
 		app.WithPlugin(podstate.Name, podstate.New),
 		app.WithPlugin(qos.Name, qos.New),
+		app.WithPlugin(circuitnoise.Name, circuitnoise.New),
 	)
 
 	code := cli.Run(command)

@@ -24,8 +24,8 @@ SCHEDULER_DIR="${SCRIPT_ROOT}"/build/scheduler
 CONTROLLER_DIR="${SCRIPT_ROOT}"/build/controller
 
 REGISTRY=${REGISTRY:-"localhost:5000/scheduler-plugins"}
-IMAGE=${IMAGE:-"kube-scheduler:latest"}
-CONTROLLER_IMAGE=${CONTROLLER_IMAGE:-"controller:latest"}
+IMAGE=${IMAGE:-"kube-scheduler:v0.0.6"}
+CONTROLLER_IMAGE=${CONTROLLER_IMAGE:-"controller:v0.0.6"}
 
 RELEASE_VERSION=${RELEASE_VERSION:-"v0.0.0"}
 
