@@ -23,9 +23,9 @@ SCRIPT_ROOT=$(realpath $(dirname "${BASH_SOURCE[@]}")/..)
 SCHEDULER_DIR="${SCRIPT_ROOT}"/build/scheduler
 CONTROLLER_DIR="${SCRIPT_ROOT}"/build/controller
 
-REGISTRY=${REGISTRY:-"localhost:5000/scheduler-plugins"}
-IMAGE=${IMAGE:-"kube-scheduler:v0.0.6"}
-CONTROLLER_IMAGE=${CONTROLLER_IMAGE:-"controller:v0.0.6"}
+REGISTRY=${REGISTRY:-"shmeelok"}
+IMAGE=${IMAGE:-"kube-scheduler:v0.0.9"}
+CONTROLLER_IMAGE=${CONTROLLER_IMAGE:-"controller:v0.0.9"}
 
 RELEASE_VERSION=${RELEASE_VERSION:-"v0.0.0"}
 
