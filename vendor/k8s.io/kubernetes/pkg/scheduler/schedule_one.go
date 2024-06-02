@@ -535,7 +535,7 @@ func (sched *Scheduler) findNodesThatPassFilters(
 		}
 		return feasibleNodes, nil
 	}
-
+	// pod.Spec.ResourceClaims
 	errCh := parallelize.NewErrorChannel()
 	var statusesLock sync.Mutex
 	var feasibleNodesLen int32

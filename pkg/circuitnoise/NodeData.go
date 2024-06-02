@@ -5,22 +5,25 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"k8s.io/klog/v2"
 )
 
-// Assigning map literal
-var nodeDNS = map[string]string{
-    "qiskube-m02":  "10.105.29.176",
-    "qiskube-m03": "10.100.165.2",
-    "qiskube-m04":  "10.102.244.161",
-    "qiskube-m05": "10.107.1.100",
-    "qiskube-m06":  "10.109.86.26",
-    "qiskube-m07": "10.110.217.147",
-    "qiskube-m08":  "10.99.229.209",
-    "qiskube-m09": "10.101.59.253",
-    "qiskube-m10":  "10.108.6.32",
-}
+// // Assigning map literal
+// var nodeDNS = map[string]string{
+//     "qiskube-m05": "10.110.217.147",
+// }
+
+// var nodeDevice = map[string]string{
+//     "qiskube-m02":  "FakeKolkata",
+//     "qiskube-m03": "FakeManhattan",
+//     "qiskube-m04":  "FakeMontreal",
+//     "qiskube-m06":  "FakeNairobi",
+//     "qiskube-m07": "FakeMumbai",
+// }
+
+var serviceIp = "<PUT YOUR SERVICE IP HERE. THIS IS THE IP ADDRESS OF META SERVER>"
 
 // var serviceCache ServiceCache = ServiceCache{serviceMap: map[string]string{}}
 
@@ -31,7 +34,7 @@ var nodeDNS = map[string]string{
 * automatically retries and sets the correct values to 
 * cache.
 */
-func GetNodeNoise(nodeName string) (float64, error) {
+func GetNodeNoise(nodeName string, podName string) (float64, error) {
     // Get the port number from the nodePort map
     // serviceUrl, ok := nodeDNS[nodeName]
     // if !ok {
@@ -39,16 +42,16 @@ func GetNodeNoise(nodeName string) (float64, error) {
     //     return 0, fmt.Errorf("nodeName %s not found in nodeDNS map", nodeName)
     // }
 
-    serviceIp := getServiceIP(nodeName)
+    // serviceIp := getServiceIP("qiskube-m05")
 
-    if serviceIp == "" {
-        // The service probably does not exist or is down
-        klog.Infof("[CircuitNoise] Failed to make HTTP request")
-        return 0, fmt.Errorf("service probably does not exist or is down")
-    }
+    // deviceName := nodeDevice[nodeName]
 
+    klog.Infof("[CircuitNoise] podName %v", podName)
+
+    lastIndexOfSep := strings.LastIndex(podName, "-")
+    jobName := podName[:lastIndexOfSep]
     // Make a network call to retrieve JSON data
-    url := getUrl(serviceIp)
+    url := getUrl(serviceIp, jobName, nodeName)
     response, err := makeNetworkCallFromUrl(url)
 
     if err != nil {
@@ -65,7 +68,7 @@ func GetNodeNoise(nodeName string) (float64, error) {
 
     // Define a struct to hold the JSON response
     var responseData struct {
-        Result float64 `json:"result"`
+        Score float64 `json:"score"`
     }
 
     // Unmarshal JSON data
@@ -74,7 +77,7 @@ func GetNodeNoise(nodeName string) (float64, error) {
         return 0, fmt.Errorf("failed to unmarshal JSON: %v", err)
     }
 
-    return responseData.Result, nil
+    return responseData.Score, nil
 }
 
 /**
@@ -113,28 +116,28 @@ func makeNetworkCallFromUrl(url string) (*http.Response, error) {
 
 // }
 
-func getUrl(serviceIp string) string {
-    return fmt.Sprintf("http://%s:8000/get-noise/", serviceIp)
+func getUrl(serviceIp string, podName string, deviceName string) string {
+    return fmt.Sprintf("http://%s:8000/get-score/%s/%s/", serviceIp, podName, deviceName)
 }
 
-func getServiceIP(nodeName string) string {
-    //var serviceName = getServiceNameFromNode(nodeName)
-    serviceIp, ok := nodeDNS[nodeName]
-    if !ok {
-        return ""
-    }
-    // var ip, ok = serviceCache.get(serviceName)
-    // if !ok {
-    //     // Service IP not found.
-    //     // Need to retrieve from kubernetes client
-    //     var serviceIP = getServiceClusterIP(serviceName)
-    //     // Store service IP in service cache
-    //     serviceCache.set(serviceName, serviceIP)
-    //     return serviceIP
-    // }
+// func getServiceIP(nodeName string) string {
+//     //var serviceName = getServiceNameFromNode(nodeName)
+//     serviceIp, ok := nodeDNS[nodeName]
+//     if !ok {
+//         return ""
+//     }
+//     // var ip, ok = serviceCache.get(serviceName)
+//     // if !ok {
+//     //     // Service IP not found.
+//     //     // Need to retrieve from kubernetes client
+//     //     var serviceIP = getServiceClusterIP(serviceName)
+//     //     // Store service IP in service cache
+//     //     serviceCache.set(serviceName, serviceIP)
+//     //     return serviceIP
+//     // }
 
-    return serviceIp
-}
+//     return serviceIp
+// }
 
 // func getServiceNameFromNode(nodeName string) string {
 //     return "node-"+nodeName[len(nodeName) - 3:]+"-service"

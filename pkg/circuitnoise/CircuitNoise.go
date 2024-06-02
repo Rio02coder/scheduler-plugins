@@ -34,7 +34,7 @@ func New(obj runtime.Object, h framework.Handle) (framework.Plugin, error) {
 // Score implements framework.ScorePlugin.
 func (c *CircuitNoise) Score(ctx context.Context, state *framework.CycleState, p *v1.Pod, nodeName string) (int64, *framework.Status) {
 	klog.Infof("[CircuitNoise] entered scoring of node")
-	noise, err := GetNodeNoise(nodeName)
+	noise, err := GetNodeNoise(nodeName, p.Name)
 	if err != nil {
 		klog.Infof("[CircuitNoise] Got error from get noise")
 		return 0, framework.NewStatus(framework.Error, fmt.Sprintf("error getting node noise: %s", err))
@@ -42,12 +42,15 @@ func (c *CircuitNoise) Score(ctx context.Context, state *framework.CycleState, p
 
 	klog.Infof("[CircuitNoise] Node '%s' noise '%s'", nodeName, noise)
 
-	if(noise >= 0.1) {
-		klog.Infof("[CircuitNoise] Final score '%s'", int64(2))
-		return int64(2), nil
+	formattedNoise := noise * 100;
+
+	klog.Infof("[CircuitNoise] Node '%s' formatted noise '%s'", nodeName, formattedNoise)
+
+	if(formattedNoise == 0) {
+		return int64(1), nil
 	}
-	klog.Infof("[CircuitNoise] Final score '%s'", int64(1))
-	return int64(1), nil
+
+	return int64(formattedNoise), nil
 }
 
 // ScoreExtensions implements framework.ScorePlugin.

@@ -24,8 +24,8 @@ SCHEDULER_DIR="${SCRIPT_ROOT}"/build/scheduler
 CONTROLLER_DIR="${SCRIPT_ROOT}"/build/controller
 
 REGISTRY=${REGISTRY:-"shmeelok"}
-IMAGE=${IMAGE:-"kube-scheduler:v0.0.9"}
-CONTROLLER_IMAGE=${CONTROLLER_IMAGE:-"controller:v0.0.9"}
+IMAGE=${IMAGE:-"kube-scheduler:v0.0.14"}
+CONTROLLER_IMAGE=${CONTROLLER_IMAGE:-"controller:v0.0.14"}
 
 RELEASE_VERSION=${RELEASE_VERSION:-"v0.0.0"}
 
